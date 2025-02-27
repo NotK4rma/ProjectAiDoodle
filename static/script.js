@@ -4,6 +4,9 @@ const clearButton = document.getElementById("clear");
 const submitButton = document.getElementById("submit");
 const resultText = document.getElementById("result");
 
+
+ctx.fillStyle = "white";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
 // Setup canvas for drawing
 let drawing = false;
 
@@ -22,23 +25,33 @@ canvas.addEventListener("mousemove", (event) => {
 
 // Clear the canvas
 clearButton.addEventListener("click", () => {
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   resultText.textContent = "";
+  ctx.fillStyle = "white";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 });
 
 // Submit the doodle
 submitButton.addEventListener("click", async () => {
   const dataURL = canvas.toDataURL("image/png");
+  console.log("DataURL:", dataURL);
   const response = await fetch("/predict", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ image: dataURL.split(",")[1] }), // Send only the base64 image
   });
-
+  
   const result = await response.json();
+  console.log(result)
   if (result.prediction) {
     resultText.textContent = `AI thinks you drew: ${result.prediction}`;
   } else {
     resultText.textContent = "Error: Could not get prediction.";
   }
+
+
 });
+
+
+
